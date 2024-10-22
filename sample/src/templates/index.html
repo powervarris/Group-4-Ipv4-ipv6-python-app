@@ -1,84 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <!-- Specifies the document type and language for accessibility and search engines -->
+    <meta charset="UTF-8" />
+    <!-- Ensures proper scaling and rendering on mobile devices by setting the viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Title of the webpage displayed in the browser tab -->
     <title>IP Information</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Link to the local CSS file to style the page (served from Flask static folder) -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <!-- Link to Leaflet CSS for interactive map styling -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-</head>
-<body>
+  </head>
+  <body>
+    <!-- Main container for the webpage content -->
     <div class="container">
-        <h1>IP Information</h1>
-        <form action="/" method="post">
-            <input type="text" name="ip_address" placeholder="Enter IP address" required>
-            <button type="submit">Locate IP</button>
-        </form>
-        <div id="map"></div>
-        <div id="ipv4-info">
-            <h2>IPv4 Information</h2>
-            <table class="styled-table">
-                <thead>
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for key, value in ipv4_info.items() %}
-                    <tr>
-                        <td>{{ key }}</td>
-                        <td>{{ value }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% if ipv6_info %}
-        <div id="ipv6-info">
-            <h2>IPv6 Information</h2>
-            <table class="styled-table">
-                <thead>
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for key, value in ipv6_info.items() %}
-                    <tr>
-                        <td>{{ key }}</td>
-                        <td>{{ value }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% endif %}
+      <!-- Main heading of the page -->
+      <h1>IP Information</h1>
+      <!-- Form to accept the IP address input from the user, submitting via POST method -->
+      <form action="/" method="post">
+        <!-- Input field for the user to enter an IP address -->
+        <input
+          type="text"
+          name="ip_address"
+          placeholder="Enter IP address"
+          required
+        />
+        <!-- Button to submit the form and trigger IP address lookup -->
+        <button type="submit">Locate IP</button>
+      </form>
+      <!-- Div to display the interactive map -->
+      <div id="map"></div>
+      <!-- Section displaying IPv4 information -->
+      <div id="ipv4-info">
+        <h2>IPv4 Information</h2>
+        <!-- Table to display IPv4 data in a structured format -->
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <!-- Table headers for the data keys and values -->
+              <th>Key</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Loop through the IPv4 information passed from the server and display key-value pairs -->
+            {% for key, value in ipv4_info.items() %}
+            <tr>
+              <!-- Display each key and its corresponding value -->
+              <td>{{ key }}</td>
+              <td>{{ value }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <!-- Conditional block to display IPv6 information if available -->
+      {% if ipv6_info %}
+      <div id="ipv6-info">
+        <h2>IPv6 Information</h2>
+        <!-- Table to display IPv6 data in a structured format -->
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <!-- Table headers for the data keys and values -->
+              <th>Key</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Loop through the IPv6 information passed from the server and display key-value pairs -->
+            {% for key, value in ipv6_info.items() %}
+            <tr>
+              <!-- Display each key and its corresponding value -->
+              <td>{{ key }}</td>
+              <td>{{ value }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
     </div>
+    <!-- Include the Leaflet JavaScript library to enable map functionality -->
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
-        var ipv4_latitude = {{ ipv4_info.latitude }};
-        var ipv4_longitude = {{ ipv4_info.longitude }};
-        var ipv6_latitude = {{ ipv6_info.latitude }};
-        var ipv6_longitude = {{ ipv6_info.longitude }};
+      // Assign latitude and longitude values for IPv4 and IPv6 from the server data
+      var ipv4_latitude = {{ ipv4_info.latitude }};
+      var ipv4_longitude = {{ ipv4_info.longitude }};
+      var ipv6_latitude = {{ ipv6_info.latitude }};
+      var ipv6_longitude = {{ ipv6_info.longitude }};
 
-        var map = L.map('map').setView([ipv4_latitude, ipv4_longitude], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
+      // Initialize the map centered on the IPv4 coordinates with a zoom level of 13
+      var map = L.map('map').setView([ipv4_latitude, ipv4_longitude], 13);
 
-        if (ipv4_latitude && ipv4_longitude) {
-            L.marker([ipv4_latitude, ipv4_longitude]).addTo(map)
-                .bindPopup('IPv4 Location')
-                .openPopup();
-        }
+      // Load and display OpenStreetMap tiles on the map
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
 
-        if (ipv6_latitude && ipv6_longitude) {
-            L.marker([ipv6_latitude, ipv6_longitude]).addTo(map)
-                .bindPopup('IPv6 Location')
-                .openPopup();
-        }
+      // Add a marker for the IPv4 location if latitude and longitude exist
+      if (ipv4_latitude && ipv4_longitude) {
+          L.marker([ipv4_latitude, ipv4_longitude]).addTo(map)
+              .bindPopup('IPv4 Location')
+              // Bind a popup displaying "IPv4 Location" to the marker
+              .openPopup();
+              // Automatically open the popup after the marker is added
+      }
+
+      // Add a marker for the IPv6 location if latitude and longitude exist
+      if (ipv6_latitude && ipv6_longitude) {
+          L.marker([ipv6_latitude, ipv6_longitude]).addTo(map)
+              .bindPopup('IPv6 Location')
+              // Bind a popup displaying "IPv6 Location" to the marker
+              .openPopup();
+              // Automatically open the popup after the marker is added
+      }
     </script>
-</body>
+  </body>
 </html>

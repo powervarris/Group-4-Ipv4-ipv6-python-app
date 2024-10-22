@@ -42,6 +42,7 @@ def get_current_ip():
 @app.route('/', methods=['GET', 'POST'])
 def index():
     api_key = 'd7deef0eeb5540a2c60b2bcf04e4fdb1'
+    api_key = 'c6076bd31b09ddc1ea539dc9c1f6d1e4'
     ipv4, ipv6 = get_current_ip()
     ipv4_info = {}
     ipv6_info = {}
