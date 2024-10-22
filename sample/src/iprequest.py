@@ -1,6 +1,8 @@
 import requests
 from flask import Flask, render_template, request
 
+# FINAL CODE FOR API 
+
 app = Flask(__name__)
 
 def get_ip_info(ip, api_key):
